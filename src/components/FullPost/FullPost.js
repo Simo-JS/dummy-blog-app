@@ -10,21 +10,17 @@ class FullPost extends Component {
   };
 
   deletePostHandler = () => {
-    axios
-      .delete("https://jsonplaceholder.typicode.com/posts/" + this.props.id)
-      .then(response => {
-        console.log(response);
-      });
+    axios.delete("/posts/" + this.props.id).then(response => {
+      console.log(response);
+    });
   };
 
   componentDidUpdate() {
     if (this.props.id) {
       if (!this.state.loadedPost || this.props.id !== this.state.loadedPost.id)
-        axios
-          .get("https://jsonplaceholder.typicode.com/posts/" + this.props.id)
-          .then(response => {
-            this.setState({ loadedPost: response.data });
-          });
+        axios.get("/posts/" + this.props.id).then(response => {
+          this.setState({ loadedPost: response.data });
+        });
     }
   }
 
