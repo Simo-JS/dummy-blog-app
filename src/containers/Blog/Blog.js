@@ -1,59 +1,57 @@
 import React, { Component } from "react";
 
-import Post from "../../components/Post/Post";
-import FullPost from "../../components/FullPost/FullPost";
-import NewPost from "../../components/NewPost/NewPost";
-import "./Blog.css";
+import { Route, NavLink, Switch, Redirect } from "react-router-dom";
 
-import axios from "axios";
+import Posts from "../Blog/Posts/Posts";
+import NewPost from "../Blog/NewPost/NewPost";
+
+import "./Blog.css";
 
 class Blog extends Component {
   state = {
-    posts: [],
-    id: null,
-    error: false
+    auth: true
   };
-
-  componentDidMount() {
-    axios
-      .get("/posts")
-      .then(response => {
-        const posts = response.data.slice(0, 6);
-        const updatedPosts = posts.map(post => {
-          return { ...post, author: "Simo" };
-        });
-        this.setState({ posts: updatedPosts });
-      })
-      .catch(error => {
-        this.setState({ error: true });
-      });
-  }
-
-  selectedPostHander = id => {
-    this.setState({ id: id });
-  };
-
   render() {
-    let posts = <p style={{ alignItems: "center" }}>Something went wrong!</p>;
-    if (!this.state.error) {
-      posts = this.state.posts.map(post => (
-        <Post
-          key={post.id}
-          title={post.title}
-          author={post.author}
-          clicked={() => this.selectedPostHander(post.id)}
-        />
-      ));
-    }
     return (
-      <div>
-        <section className="Posts">{posts}</section>
-        <section>
-          <FullPost id={this.state.id} />
-        </section>
-        <section>
-          <NewPost />
-        </section>
+      <div className="Blog">
+        <header>
+          <nav>
+            <ul>
+              <li>
+                <NavLink
+                  to="/posts"
+                  exact
+                  activeStyle={{
+                    color: "#fa923f",
+                    textDecoration: "underline"
+                  }}
+                >
+                  Posts
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to={{
+                    pathname: "/new-post",
+                    hash: "#submit",
+                    search: "?quik-submit"
+                  }}
+                >
+                  New Post
+                </NavLink>
+              </li>
+            </ul>
+          </nav>
+        </header>
+
+        <Switch>
+          {this.state.auth ? (
+            <Route path="/new-post" component={NewPost} />
+          ) : null}
+          <Route path="/posts" component={Posts} />
+          <Route render={() => <h1>NOT FOUND</h1>} />
+          {/*<Redirect from="/" to="/posts" />*/}
+        </Switch>
       </div>
     );
   }
